@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BizChain Map — Светлана Лукашенко · PM International</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#1db87a;--green2:#0fa86a;--green-glow:rgba(29,184,122,0.18);
+  --yellow:#e8a308;--yellow-glow:rgba(232,163,8,0.15);
+  --red:#e04848;--red-glow:rgba(224,72,72,0.14);
+  --hole-glow:rgba(255,120,0,0.22);
+  --purple:#7c3aed;--blue:#2196f3;--teal:#0d9488;--orange:#f97316;
+  --bg:#eef4f1;
+  --card:rgba(255,255,255,0.86);
+  --border:rgba(29,184,122,0.12);
+  --text:#182820;--text2:#3d5a47;--text3:#7da88e;
+  --sh:0 2px 4px rgba(0,0,0,0.04),0 6px 20px rgba(15,186,106,0.07);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.13}
+
+/* PAGE */
+.page{position:relative;z-index:1;max-width:1140px;margin:0 auto;padding:32px 20px 60px}
+
+/* ══ HEADER ══ */
+.header{text-align:center;margin-bottom:32px}
+.logo-row{display:inline-flex;align-items:center;gap:10px;margin-bottom:14px;
+  background:rgba(255,255,255,.7);backdrop-filter:blur(10px);
+  border:1px solid var(--border);border-radius:24px;padding:7px 16px;
+  box-shadow:var(--sh)}
+.logo-circle{width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,#1db87a,#2aa198,#1a5276);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 10px rgba(15,186,106,.35)}
+.logo-circle svg{width:16px;height:16px;fill:#fff}
+.logo-txt{font-family:'Unbounded',sans-serif;font-weight:700;font-size:11px;
+  color:var(--text2);letter-spacing:.05em}
+.ai-dot{width:7px;height:7px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#6ee7b7,#1db87a);
+  box-shadow:0 0 7px rgba(29,184,122,.6);
+  animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 5px rgba(29,184,122,.4)}50%{box-shadow:0 0 14px rgba(29,184,122,.75)}}
+
+.main-title{font-family:'Unbounded',sans-serif;font-weight:900;
+  font-size:clamp(26px,4.5vw,46px);line-height:1.05;letter-spacing:-.02em;
+  background:linear-gradient(135deg,#1db87a 0%,#06b6d4 40%,#2196f3 80%,#1db87a 100%);
+  background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;animation:grad 6s ease-in-out infinite;margin-bottom:8px}
+@keyframes grad{0%{background-position:0 50%}50%{background-position:100% 50%}100%{background-position:0 50%}}
+
+/* ══ CLIENT HERO ══ */
+.client-hero{
+  background:var(--card);backdrop-filter:blur(18px);
+  border:1px solid var(--border);border-radius:20px;
+  padding:20px 24px;margin-bottom:20px;
+  box-shadow:var(--sh);
+  display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.client-avatar{
+  width:56px;height:56px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#1db87a,#06b6d4);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Unbounded',sans-serif;font-weight:800;font-size:20px;color:#fff;
+  box-shadow:0 4px 16px rgba(29,184,122,.3)}
+.client-info{flex:1;min-width:180px}
+.client-name{font-family:'Unbounded',sans-serif;font-weight:800;font-size:18px;
+  color:var(--text);margin-bottom:4px}
+.client-sub{font-size:12px;color:var(--text3);font-weight:500}
+.client-tag{display:inline-block;margin-top:6px;
+  background:rgba(29,184,122,.1);border:1px solid rgba(29,184,122,.2);
+  border-radius:8px;padding:3px 9px;font-size:10px;font-weight:700;
+  color:var(--green2);letter-spacing:.04em}
+.client-metrics{display:flex;gap:10px;flex-wrap:wrap}
+.metric{
+  text-align:center;padding:12px 18px;
+  background:rgba(29,184,122,.05);
+  border:1px solid rgba(29,184,122,.12);
+  border-radius:14px;min-width:80px}
+.metric-val{font-family:'JetBrains Mono',monospace;font-weight:700;
+  font-size:20px;color:var(--green2);line-height:1}
+.metric-lbl{font-size:9.5px;color:var(--text3);margin-top:4px;font-weight:600;letter-spacing:.03em}
+
+/* ══ INSIGHTS ══ */
+.insights-block{
+  background:linear-gradient(135deg,rgba(29,184,122,.08),rgba(6,182,212,.06));
+  border:1px solid rgba(29,184,122,.18);
+  border-radius:18px;padding:18px 22px;margin-bottom:20px;
+  box-shadow:0 2px 16px rgba(29,184,122,.08)}
+.insights-title{
+  font-family:'Unbounded',sans-serif;font-weight:700;font-size:10px;
+  color:var(--green2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;
+  display:flex;align-items:center;gap:8px}
+.insights-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.insight-card{
+  background:rgba(255,255,255,.75);backdrop-filter:blur(10px);
+  border-radius:12px;padding:12px 14px;
+  border:1px solid rgba(255,255,255,.6)}
+.insight-num{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:22px;line-height:1;margin-bottom:4px}
+.insight-num.red{color:var(--red)}
+.insight-num.green{color:var(--green2)}
+.insight-num.yellow{color:var(--yellow)}
+.insight-label{font-size:11.5px;color:var(--text2);font-weight:600;line-height:1.4}
+.insight-sub{font-size:10px;color:var(--text3);margin-top:3px}
+
+/* ══ GLOBAL STATS ══ */
+.global-stats{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center;justify-content:center}
+.gpill{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.78);backdrop-filter:blur(8px);
+  border:1px solid var(--border);border-radius:24px;padding:8px 16px;
+  font-size:12px;font-weight:700;box-shadow:var(--sh)}
+.gdot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.gpill-big{
+  background:linear-gradient(135deg,rgba(29,184,122,.12),rgba(6,182,212,.08));
+  border-color:rgba(29,184,122,.25);color:var(--green2);font-size:14px}
+
+/* ══ CHAIN CARD ══ */
+.chain-wrap{margin-bottom:14px;opacity:0;transform:translateY(14px);animation:slideUp .5s ease forwards}
+.chain-wrap:nth-child(1){animation-delay:.06s}
+.chain-wrap:nth-child(2){animation-delay:.14s}
+.chain-wrap:nth-child(3){animation-delay:.22s}
+.chain-wrap:nth-child(4){animation-delay:.30s}
+.chain-wrap:nth-child(5){animation-delay:.38s}
+@keyframes slideUp{to{opacity:1;transform:translateY(0)}}
+
+.chain-card{
+  background:var(--card);backdrop-filter:blur(18px);
+  border:1px solid var(--border);border-radius:18px;
+  padding:16px 18px;box-shadow:var(--sh);
+  transition:transform .25s,box-shadow .25s}
+.chain-card:hover{transform:translateY(-2px);box-shadow:0 4px 8px rgba(0,0,0,.06),0 12px 32px rgba(29,184,122,.1)}
+
+.chain-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.chain-bar{height:36px;width:6px;border-radius:4px;flex-shrink:0}
+.chain-name{font-family:'Unbounded',sans-serif;font-weight:800;font-size:11px;
+  color:var(--text);letter-spacing:.06em;flex:1}
+.chain-pct-badge{
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:11px;
+  padding:4px 10px;border-radius:8px;white-space:nowrap}
+
+/* ══ STEPS ══ */
+.steps-row{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap}
+
+.step{
+  flex:1;min-width:120px;max-width:170px;
+  padding:12px 10px 10px;border-radius:14px;border:1.5px solid;
+  cursor:pointer;position:relative;overflow:hidden;
+  transition:transform .22s,box-shadow .22s;
+  display:flex;flex-direction:column;gap:5px}
+.step-energy{position:absolute;top:0;left:0;height:2.5px;width:0;
+  border-radius:2px;transition:width .3s}
+.step:hover .step-energy{width:60%}
+.step::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.55) 48%,rgba(255,255,255,.7) 52%,rgba(255,255,255,.55) 58%,transparent 66%);
+  opacity:0;pointer-events:none}
+.step:hover::after{animation:shimmer 2s ease-in-out infinite}
+@keyframes shimmer{from{transform:translateX(-140%)}to{transform:translateX(140%)}}
+.step:hover{transform:translateY(-5px)}
+
+/* green */
+.step.full{
+  background:linear-gradient(160deg,rgba(29,184,122,.10) 0%,rgba(29,184,122,.03) 100%);
+  border-color:rgba(29,184,122,.22)}
+.step.full:hover{box-shadow:0 10px 30px rgba(29,184,122,.18)}
+.step.full .step-energy{background:linear-gradient(90deg,transparent,#1db87a,#06b6d4,transparent)}
+/* yellow */
+.step.boost{
+  background:linear-gradient(160deg,rgba(232,163,8,.10) 0%,rgba(232,163,8,.03) 100%);
+  border-color:rgba(232,163,8,.24)}
+.step.boost:hover{box-shadow:0 10px 30px rgba(232,163,8,.16)}
+.step.boost .step-energy{background:linear-gradient(90deg,transparent,#e8a308,#f97316,transparent)}
+/* red */
+.step.human{
+  background:linear-gradient(160deg,rgba(224,72,72,.08) 0%,rgba(224,72,72,.02) 100%);
+  border-color:rgba(224,72,72,.20)}
+.step.human:hover{box-shadow:0 10px 30px rgba(224,72,72,.14)}
+.step.human .step-energy{background:linear-gradient(90deg,transparent,#e04848,#f97316,transparent)}
+
+/* HOLE — special treatment */
+.step.hole{
+  background:linear-gradient(160deg,rgba(255,100,0,.07) 0%,rgba(255,60,0,.03) 100%);
+  border:2px dashed rgba(255,100,0,.45);
+  animation:holePulse 2.5s ease-in-out infinite}
+@keyframes holePulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(255,100,0,.0)}
+  50%{box-shadow:0 0 18px 4px rgba(255,100,0,.18)}}
+.step.hole:hover{transform:translateY(-5px);box-shadow:0 10px 30px rgba(255,100,0,.22)!important;animation:none}
+.step.hole .step-energy{background:linear-gradient(90deg,transparent,#ff6400,#e04848,transparent)}
+
+.step-icon{font-size:18px;line-height:1}
+.step-name{font-family:'Unbounded',sans-serif;font-weight:700;font-size:10px;
+  line-height:1.4;color:var(--text);white-space:pre-line}
+.step-badge{
+  margin-top:2px;display:inline-block;font-size:8.5px;font-weight:700;
+  border-radius:5px;padding:2px 7px;letter-spacing:.03em;align-self:flex-start}
+.step.full .step-badge{background:rgba(29,184,122,.13);color:var(--green2)}
+.step.boost .step-badge{background:rgba(232,163,8,.13);color:#a07000}
+.step.human .step-badge{background:rgba(224,72,72,.11);color:var(--red)}
+.step.hole .step-badge{background:rgba(255,100,0,.12);color:#d04000;border:1px solid rgba(255,100,0,.2)}
+
+.hole-marker{
+  position:absolute;top:7px;right:7px;
+  background:linear-gradient(135deg,#ff6400,#e04848);
+  color:#fff;font-size:8px;font-weight:800;
+  border-radius:5px;padding:2px 6px;letter-spacing:.04em;
+  box-shadow:0 2px 8px rgba(255,100,0,.4)}
+
+/* ══ ARROW ══ */
+.arrow-wrap{display:flex;align-items:center;flex-shrink:0}
+.arrow-svg{width:20px;height:20px;overflow:visible}
+
+/* ══ CONNECTIONS ══ */
+.conn-section{margin:20px 0}
+.conn-title{
+  font-family:'Unbounded',sans-serif;font-weight:700;font-size:10px;
+  color:var(--text3);letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.conn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+.conn-pill{
+  background:rgba(255,255,255,.72);backdrop-filter:blur(8px);
+  border:1.5px solid rgba(255,255,255,.5);border-radius:12px;
+  padding:10px 12px;cursor:pointer;
+  transition:transform .2s,box-shadow .2s;
+  display:flex;align-items:flex-start;gap:9px}
+.conn-pill:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.08)}
+.conn-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.conn-lbl{font-size:10.5px;font-weight:700;color:var(--text);margin-bottom:2px}
+.conn-sub{font-size:9.5px;color:var(--text3);line-height:1.4}
+.conn-type{font-size:9px;font-weight:700;margin-top:3px}
+
+/* ══ LEGEND ══ */
+.legend{
+  display:flex;gap:20px;flex-wrap:wrap;justify-content:center;
+  margin-top:24px;padding:14px 20px;
+  background:rgba(255,255,255,.65);backdrop-filter:blur(8px);
+  border:1px solid var(--border);border-radius:14px;box-shadow:var(--sh)}
+.leg{display:flex;align-items:center;gap:8px;font-size:11.5px;
+  color:var(--text2);font-weight:500}
+.leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+/* ══ MODAL ══ */
+#overlay{position:fixed;inset:0;z-index:200;
+  background:rgba(10,24,16,.38);backdrop-filter:blur(7px);
+  display:none;align-items:center;justify-content:center;padding:20px}
+#overlay.show{display:flex}
+.modal{
+  background:rgba(255,255,255,.95);backdrop-filter:blur(28px);
+  border:1px solid rgba(29,184,122,.13);border-radius:22px;
+  box-shadow:0 28px 70px rgba(0,0,0,.12);
+  width:100%;max-width:500px;max-height:90vh;overflow-y:auto;
+  animation:mIn .22s ease}
+@keyframes mIn{from{opacity:0;transform:scale(.94) translateY(10px)}to{opacity:1;transform:none}}
+.modal::-webkit-scrollbar{width:4px}
+.modal::-webkit-scrollbar-thumb{background:rgba(29,184,122,.2);border-radius:2px}
+
+.mhead{
+  padding:20px 22px 16px;border-bottom:1px solid var(--border);
+  position:sticky;top:0;background:rgba(255,255,255,.97);
+  border-radius:22px 22px 0 0;z-index:2;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.mbadge{display:inline-block;font-size:10px;font-weight:800;
+  border-radius:7px;padding:3px 9px;margin-bottom:7px;letter-spacing:.05em}
+.mbadge.full{background:rgba(29,184,122,.13);color:var(--green2)}
+.mbadge.boost{background:rgba(232,163,8,.13);color:#9a7000}
+.mbadge.human{background:rgba(224,72,72,.11);color:var(--red)}
+#mTitle{font-family:'Unbounded',sans-serif;font-weight:800;font-size:16px;
+  color:var(--text);line-height:1.25}
+.mclose{width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.07);
+  border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;
+  justify-content:center;color:var(--text2);transition:background .2s;flex-shrink:0}
+.mclose:hover{background:rgba(0,0,0,.13)}
+
+.mbody{padding:18px 22px 22px}
+.mchain{font-size:10px;font-weight:700;color:var(--text3);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:9px}
+.mdesc{font-size:13px;color:var(--text2);line-height:1.7}
+.mquote{font-size:12.5px;font-style:italic;color:var(--text2);
+  padding:8px 13px;margin:10px 0;
+  border-left:3px solid var(--green);background:rgba(29,184,122,.05);
+  border-radius:0 9px 9px 0}
+.msec{font-size:9.5px;font-weight:800;color:var(--text3);
+  letter-spacing:.09em;text-transform:uppercase;
+  margin:16px 0 9px;padding-top:13px;border-top:1px solid var(--border)}
+.munit{padding:11px 13px;background:rgba(0,0,0,.025);border-radius:11px}
+.munit-row{font-size:13px;color:var(--text2);padding:4px 0;
+  display:flex;gap:9px;align-items:flex-start}
+.munit-row span{flex-shrink:0}
+.munit-row.hi{font-weight:700;color:var(--green2)}
+.mai{padding:11px 13px;border-radius:11px;border-left:3px solid}
+.mai.full{background:rgba(29,184,122,.06);border-color:#1db87a}
+.mai.boost{background:rgba(232,163,8,.06);border-color:#e8a308}
+.mai.human{background:rgba(224,72,72,.05);border-color:#e04848}
+.mai-t{font-size:9.5px;font-weight:800;color:var(--text3);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px}
+.mai-txt{font-size:13px;color:var(--text2);line-height:1.7}
+.mlinks{display:flex;flex-direction:column;gap:8px}
+.ml{display:flex;align-items:flex-start;gap:10px;
+  padding:8px 11px;background:rgba(0,0,0,.025);border-radius:10px}
+.ml-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.ml-lbl{font-size:11px;font-weight:700;margin-bottom:2px}
+.ml-txt{font-size:12px;color:var(--text2)}
+.ml-sub{font-size:9.5px;color:var(--text3);margin-top:2px}
+
+@media(max-width:640px){
+  .step{min-width:90px;padding:10px 8px 8px}
+  .step-name{font-size:9px}
+  .step-badge{font-size:7.5px}
+  .steps-row{gap:5px}
+  .metric{padding:10px 12px}
+  .metric-val{font-size:17px}
+}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<div class="page">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo-row">
+    <div class="logo-circle">
+      <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm-1 14V8h2v8h-2zm4 0V8h2v8h-2z"/></svg>
+    </div>
+    <div class="logo-txt">ИИЩЕНКО LAB</div>
+    <div class="ai-dot"></div>
+  </div>
+  <div class="main-title">BizChain Map</div>
+</div>
+
+<!-- CLIENT HERO -->
+<div class="client-hero">
+  <div class="client-avatar">СЛ</div>
+  <div class="client-info">
+    <div class="client-name">Светлана Лукашенко</div>
+    <div class="client-sub">PM International · FitLine · Благовещенск · Дальний Восток</div>
+    <div class="client-tag">⭐ АММ-статус · В компании с 9 января 2026</div>
+  </div>
+  <div class="client-metrics">
+    <div class="metric"><div class="metric-val">300К</div><div class="metric-lbl">доход/мес</div></div>
+    <div class="metric"><div class="metric-val">1 МЛН</div><div class="metric-lbl">цель к 2027</div></div>
+    <div class="metric"><div class="metric-val">52%</div><div class="metric-lbl">autoship</div></div>
+    <div class="metric"><div class="metric-val">5+</div><div class="metric-lbl">городов</div></div>
+    <div class="metric"><div class="metric-val">3</div><div class="metric-lbl">страны</div></div>
+  </div>
+</div>
+
+<!-- INSIGHTS -->
+<div class="insights-block">
+  <div class="insights-title">
+    <span style="font-size:14px">🔍</span> Главные инсайты карты
+  </div>
+  <div class="insights-grid">
+    <div class="insight-card">
+      <div class="insight-num red">30 ч</div>
+      <div class="insight-label">в неделю уходит на созвоны с новыми людьми</div>
+      <div class="insight-sub">ИИ освободит ~12 ч через систему шаблонов</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-num yellow">5 ч</div>
+      <div class="insight-label">тратит на «думать о чём написать» — без контент-плана</div>
+      <div class="insight-sub">ИИ сделает план за 10 минут вместо 5 часов</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-num red">2 ДЫРЫ</div>
+      <div class="insight-label">нет рассылок клиентам + отзывы не собираются</div>
+      <div class="insight-sub">При 52% autoship это прямая потеря +10-20% к LTV</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-num green">76%</div>
+      <div class="insight-label">звеньев бизнеса — потенциал автоматизации ИИ</div>
+      <div class="insight-sub">19 из 25 звеньев ИИ закрывает или ускоряет</div>
+    </div>
+  </div>
+</div>
+
+<!-- GLOBAL STATS -->
+<div class="global-stats">
+  <div class="gpill"><div class="gdot" style="background:#1db87a;box-shadow:0 0 7px rgba(29,184,122,.55)"></div>10 звеньев — ИИ делает сам</div>
+  <div class="gpill"><div class="gdot" style="background:#e8a308;box-shadow:0 0 7px rgba(232,163,8,.45)"></div>9 звеньев — ИИ ускоряет ×5–10</div>
+  <div class="gpill"><div class="gdot" style="background:#e04848;box-shadow:0 0 7px rgba(224,72,72,.45)"></div>6 звеньев — человек незаменим</div>
+  <div class="gpill gpill-big"><div class="ai-dot"></div>76% ИИ-потенциал</div>
+</div>
+
+<!-- CHAINS -->
+<div id="chains"></div>
+
+<!-- CONNECTIONS -->
+<div class="conn-section">
+  <div class="conn-title"><span>⚡</span> Переплетения между цепочками</div>
+  <div class="conn-grid" id="conns"></div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="leg"><div class="leg-dot" style="background:#1db87a;box-shadow:0 0 6px rgba(29,184,122,.5)"></div>Зелёный — ИИ автоматизирует полностью</div>
+  <div class="leg"><div class="leg-dot" style="background:#e8a308;box-shadow:0 0 6px rgba(232,163,8,.4)"></div>Жёлтый — ИИ ускоряет, человек контролирует</div>
+  <div class="leg"><div class="leg-dot" style="background:#e04848;box-shadow:0 0 6px rgba(224,72,72,.4)"></div>Красный — требует живого человека</div>
+  <div class="leg"><div class="leg-dot" style="background:#ff6400;box-shadow:0 0 6px rgba(255,100,0,.5);border:1.5px dashed rgba(255,100,0,.6)"></div>⚠ Дыра — важно, но не делается</div>
+</div>
+
+</div><!-- /page -->
+
+<!-- OVERLAY -->
+<div id="overlay" onclick="overlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="mhead">
+      <div>
+        <div id="mBadge" class="mbadge full">ИИ делает сам</div>
+        <div id="mTitle">Звено</div>
+      </div>
+      <button class="mclose" onclick="closeModal()">✕</button>
+    </div>
+    <div class="mbody" id="mBody"></div>
+  </div>
+</div>
+
+<script>
+// ══ DATA ══════════════════════════════════════════════════════════════
+const CHAINS = [
+  {
+    id:'attract', name:'ПРИВЛЕЧЕНИЕ',
+    gradient:'linear-gradient(90deg,#4ade80,#1db87a,#06b6d4)',
+    pctNum:68, pctCol:'#1db87a',
+    steps:[
+      {
+        name:'Статус\nСторис',icon:'📣',type:'full',badge:'ИИ сам',hole:false,
+        title:'Статусы и Сторис', chain:'Привлечение', ai:'full',
+        desc:'Светлана ежедневно выставляет статусы в WhatsApp, Telegram и Instagram Stories. Именно отсюда приходит ~10% новых контактов — люди видят активность и сами пишут.',
+        desc_quote:'«Постоянно в Телеграме, в Ватсаппе выставляю статусы»',
+        unit_money:'0 ₽ затрат', unit_time:'~1–2 ч/нед',
+        ai_text:'ИИ за 3 минуты генерирует 10 вариантов статусов на неделю вперёд: про энергию, личный результат от продукта, кейс клиента, приглашение. Светлана выбирает нужный — без придумывания.',
+        links:[{color:'#2196f3',lbl:'→ Контент: Текст поста',txt:'Один материал питает статусы и посты',sub:'Информационный'}]
+      },
+      {
+        name:'Первый\nконтакт',icon:'📞',type:'human',badge:'Человек',hole:false,
+        title:'Первый контакт (тёплый рынок)', chain:'Привлечение', ai:'human',
+        desc:'Основной канал привлечения — тёплый рынок (90%). Светлана лично звонит знакомым, пишет через рекомендации. На созвоны с новыми людьми уходит 30 часов в неделю — половина рабочего времени.',
+        desc_quote:null,
+        unit_money:'0 ₽', unit_time:'30 ч/нед — главный пожиратель',
+        ai_text:'Живой голос нельзя заменить — ИИ не касается самого звонка. Но ДО: ИИ составляет скрипт первого касания под конкретного человека. ПОСЛЕ: фиксирует итог и автоматически ставит напоминание.',
+        links:[{color:'#1db87a',lbl:'→ Онлайн-презентация PM',txt:'Приглашение на встречу после знакомства',sub:'Триггерный'}]
+      },
+      {
+        name:'Онлайн-\nпрезентация',icon:'🎯',type:'boost',badge:'ИИ ускоряет',hole:false,
+        title:'Онлайн-презентация PM', chain:'Привлечение', ai:'boost',
+        desc:'PM проводит презентации каждый день, 2 раза в день. Ведут лидеры команды. Светлана приглашает туда потенциальных партнёров и клиентов — это отработанный системный инструмент.',
+        desc_quote:null,
+        unit_money:'0 ₽', unit_time:'10 ч/нед (мероприятия PM)',
+        ai_text:'ИИ пишет персональное приглашение под каждого человека: обращается к его конкретной боли или интересу, озвученному ранее. Светлана отправляет готовое сообщение — не придумывает каждый раз.',
+        links:[{color:'#1db87a',lbl:'→ Созвон-квалификация',txt:'После презентации — личный разговор',sub:'Триггерный'}]
+      },
+      {
+        name:'Созвон-\nквалификация',icon:'🔍',type:'human',badge:'Человек',hole:false,
+        title:'Созвон-квалификация', chain:'Привлечение', ai:'human',
+        desc:'После презентации — личный созвон. Светлана выясняет, что интересно: продукт или бизнес. Здесь решается, пойдёт ли человек дальше. Ключевое звено — не автоматизировать.',
+        desc_quote:'«Созваниваюсь — выясняю что интересно, предлагаю варианты продукта и скидки»',
+        unit_money:'0 ₽', unit_time:'Часть из 30 ч/нед',
+        ai_text:'Доверие строится голосом. ИИ помогает ДО: готовит «карту человека» — что известно из переписки, какая возможная боль, варианты подхода. ПОСЛЕ: фиксирует договорённости и следующий шаг.',
+        links:[{color:'#1db87a',lbl:'→ Регистрация в системе',txt:'Решение принято → оформление',sub:'Триггерный'}]
+      },
+      {
+        name:'Регистрация\nв системе',icon:'✅',type:'full',badge:'ИИ сам',hole:false,
+        title:'Регистрация в системе PM', chain:'Привлечение', ai:'full',
+        desc:'После принятия решения человек переходит по ссылке и регистрируется напрямую на сайте PM. Система автоматизирована компанией — Светлана почти не участвует.',
+        desc_quote:null,
+        unit_money:'0 ₽', unit_time:'~1 ч/нед',
+        ai_text:'Сразу после регистрации ИИ отправляет приветственное сообщение: ссылки на нужные чаты, первые 3 шага, что ждать в первые 7 дней. Настраивается один раз — работает для каждого нового человека.',
+        links:[{color:'#0d9488',lbl:'→ Исполнение: Добавление в чаты',txt:'Регистрация → вход в систему команды',sub:'Триггерный'}]
+      }
+    ]
+  },
+  {
+    id:'sales', name:'ПРОДАЖА',
+    gradient:'linear-gradient(90deg,#a78bfa,#7c3aed,#ec4899)',
+    pctNum:60, pctCol:'#7c3aed',
+    steps:[
+      {
+        name:'Входящий\nзапрос',icon:'💬',type:'boost',badge:'ИИ ускоряет',hole:false,
+        title:'Входящий запрос (директ)', chain:'Продажа', ai:'boost',
+        desc:'Входящие сообщения про продукт или возможность. Светлана отвечает сама, в течение часа. На директ и мессенджеры уходит ~3 ч/нед.',
+        desc_quote:'«Отвечаю сама, в течение часа»',
+        unit_money:'0 ₽', unit_time:'3 ч/нед (директ/мессенджеры)',
+        ai_text:'ИИ готовит 2–3 варианта ответа с разными акцентами (продукт / бизнес / встреча). Светлана выбирает подходящий за 30 секунд и при необходимости добавляет личную нотку.',
+        links:[{color:'#7c3aed',lbl:'→ Подбор продукта',txt:'Интерес подтверждён → консультация',sub:'Триггерный'}]
+      },
+      {
+        name:'Подбор\nпродукта',icon:'🔬',type:'human',badge:'Человек',hole:false,
+        title:'Подбор продукта под потребность', chain:'Продажа', ai:'human',
+        desc:'Главная экспертиза продажи. Светлана слышит боль человека — нет энергии, суставы, вес, кожа — и подбирает нужный продукт из линейки. Это красная линия: «подбор продукта — личное общение».',
+        desc_quote:'«Красные линии: личное общение с партнёрами и подбор продукта для клиента»',
+        unit_money:'0 ₽', unit_time:'Часть из 5 ч/нед (консультации)',
+        ai_text:'Здесь Светлана незаменима — слышит человека и знает линейку изнутри. ИИ готовит «шпаргалку под запрос»: боль → продукт → почему → первый шаг. Фиксирует потребность после разговора.',
+        links:[{color:'#7c3aed',lbl:'→ Расчёт/Оффер',txt:'Потребность выяснена → персональное предложение',sub:'Триггерный'}]
+      },
+      {
+        name:'Расчёт\nОффер',icon:'📋',type:'boost',badge:'ИИ ускоряет',hole:false,
+        title:'Расчёт и формирование оффера', chain:'Продажа', ai:'boost',
+        desc:'Персональное предложение под человека: какой сет, цена, что входит, бонусы PM. Стартовый набор — от 16 000 ₽, Быстрый старт — 65 000 ₽.',
+        desc_quote:null,
+        unit_money:'Чек: 16К–65К ₽', unit_time:'Входит в консультации',
+        ai_text:'ИИ по шаблону собирает персональный оффер за 1 минуту: [имя] → [боль] → [продукт] → [цена] → [что войдёт] → [бонус]. Светлана проверяет за 30 сек и отправляет.',
+        links:[{color:'#7c3aed',lbl:'→ Оплата на сайте PM',txt:'Оффер принят → оформление',sub:'Триггерный'}]
+      },
+      {
+        name:'Оплата\nна сайте',icon:'💳',type:'full',badge:'ИИ сам',hole:false,
+        title:'Оплата на сайте PM', chain:'Продажа', ai:'full',
+        desc:'Клиент оплачивает заказ напрямую через сайт PM. Деньги идут в компанию, доставка со складов PM (Москва, Краснодар, Иркутск). Срок доставки: 5–10 дней, отслеживание в СДЭК.',
+        desc_quote:'«Ссылка → регистрация → оплата → доставка от компании»',
+        unit_money:'Средний чек: 16К–65К ₽', unit_time:'~1 ч/нед',
+        ai_text:'Весь процесс оплаты автоматизирован PM. ИИ сразу отправляет клиенту подтверждение с инструкцией: «Доставка 5–10 дней, отслеживай в СДЭК. Напишу через 2 дня — спрошу как самочувствие».',
+        links:[{color:'#0d9488',lbl:'→ Исполнение: В чаты',txt:'Оплата → вход в систему команды PM',sub:'Триггерный'},{color:'#d97706',lbl:'→ Удержание: Follow-up',txt:'Оплата запускает сопровождение',sub:'Триггерный'}]
+      },
+      {
+        name:'Онбординг\nклиента',icon:'🎓',type:'boost',badge:'ИИ ускоряет',hole:false,
+        title:'Онбординг: как пить продукт', chain:'Продажа', ai:'boost',
+        desc:'Светлана объясняет как правильно принимать продукт: на созвоне или голосовым + отправляет письменную инструкцию и видео PM. Добавляет клиента в чат отзывов по продукту.',
+        desc_quote:'«Объясняю как пить, отправляю письменно информацию и видео, добавляю в чат отзывов»',
+        unit_money:'0 ₽', unit_time:'~1 ч/нед (клиенты)',
+        ai_text:'ИИ готовит персональную инструкцию под купленный продукт: когда пить, как разбавлять, что ожидать на день 1 / 2 / 7. Светлана проверяет → отправляет. Видео от PM — вручную.',
+        links:[{color:'#d97706',lbl:'→ Удержание: Follow-up',txt:'Онбординг запускает цикл сопровождения',sub:'Информационный'}]
+      }
+    ]
+  },
+  {
+    id:'exec', name:'ИСПОЛНЕНИЕ',
+    gradient:'linear-gradient(90deg,#fbbf24,#e8a308,#f97316)',
+    pctNum:80, pctCol:'#d97706',
+    steps:[
+      {
+        name:'Добавление\nв чаты',icon:'📲',type:'full',badge:'ИИ сам',hole:false,
+        title:'Добавление в чаты команды', chain:'Исполнение', ai:'full',
+        desc:'Каждый новый партнёр входит в систему Telegram-чатов PM: информационный, обучение, мотивация, поддержка. Система чатов — основа дупликации и роста команды.',
+        desc_quote:'«Система работает через систему чатов. Очень удобно, очень просто»',
+        unit_money:'0 ₽', unit_time:'Часть из 15 ч/нед (обучение команды)',
+        ai_text:'ИИ отправляет новому партнёру приветственное сообщение: список чатов со ссылками, первые 3 шага, что делать в первые 48 часов. Настраивается один раз — работает автоматически для всех.',
+        links:[{color:'#e8a308',lbl:'→ Обучение команды',txt:'Чаты → доступ к обучающим материалам',sub:'Информационный'}]
+      },
+      {
+        name:'Обучение\nкоманды',icon:'📚',type:'full',badge:'ИИ сам',hole:false,
+        title:'Обучение команды (чаты)', chain:'Исполнение', ai:'full',
+        desc:'Регулярные рассылки в чаты команды: ссылки на школы PM, оперативки, мотивационные материалы. Обучение идёт через систему чатов и вебинаров PM.',
+        desc_quote:null,
+        unit_money:'0 ₽', unit_time:'10 ч/нед (мероприятия PM)',
+        ai_text:'ИИ составляет еженедельный дайджест для чата команды: ссылки на школы, мотивирующий факт о компании, задача недели, результат партнёра. Светлана одобряет за 5 мин → публикует.',
+        links:[{color:'#e8a308',lbl:'→ Разборы/Коучинг',txt:'Обучение → вопросы → личные разборы',sub:'Информационный'}]
+      },
+      {
+        name:'Разборы\nКоучинг',icon:'🧠',type:'human',badge:'Человек',hole:false,
+        title:'Разборы и коучинг партнёров', chain:'Исполнение', ai:'human',
+        desc:'Личные созвоны с партнёрами: разборы ситуаций, помощь с клиентами, мотивация, стратегия. Один из главных поглотителей времени — ~7 ч/нед.',
+        desc_quote:null,
+        unit_money:'Инвестиция в рост команды', unit_time:'7 ч/нед',
+        ai_text:'Живой разговор — нельзя автоматизировать. ИИ помогает ДО: структура разбора под конкретную ситуацию. ПОСЛЕ: фиксирует договорённости, расставляет приоритеты следующих звонков.',
+        links:[{color:'#e8a308',lbl:'→ Шаблоны/Инструкции',txt:'Разборы → типовые решения → шаблоны',sub:'Информационный'}]
+      },
+      {
+        name:'Шаблоны\nИнструкции',icon:'📝',type:'full',badge:'ИИ сам',hole:false,
+        title:'Шаблоны и инструкции для команды', chain:'Исполнение', ai:'full',
+        desc:'Материалы для дупликации: скрипты первого касания, ответы на возражения, инструкции по продукту, шаблоны приглашений. Без этого команда не растёт самостоятельно.',
+        desc_quote:'«Постановка чётких задач в команде, расписывать план задач на день»',
+        unit_money:'0 ₽', unit_time:'Часть из 2 ч/нед (административное)',
+        ai_text:'ИИ создаёт полный набор шаблонов за 1 сессию: скрипт первого касания, ответы на TOP-5 возражений («дорого», «сетевой», «нет времени», «мне всего хватает», «подумаю»), инструкция «Первые 7 дней».',
+        links:[{color:'#7c3aed',lbl:'→ Контент: Текст поста',txt:'Шаблоны → основа для публикаций',sub:'Информационный'}]
+      },
+      {
+        name:'Контроль\nквалификаций',icon:'📊',type:'boost',badge:'ИИ ускоряет',hole:false,
+        title:'Контроль квалификаций партнёров', chain:'Исполнение', ai:'boost',
+        desc:'Отслеживание прогресса команды: кто близок к квалификации, у кого застой, кому нужна поддержка именно сейчас. Критично для планирования усилий.',
+        desc_quote:null,
+        unit_money:'0 ₽', unit_time:'Часть из 2 ч/нед (планирование)',
+        ai_text:'ИИ анализирует данные и выдаёт приоритетный список: кто в одном шаге от квалификации, кто «остыл», кому нужен один разговор. Светлана видит готовый список звонков на неделю.',
+        links:[{color:'#e8a308',lbl:'→ Разборы/Коучинг',txt:'Контроль → приоритетные разборы',sub:'Триггерный'}]
+      }
+    ]
+  },
+  {
+    id:'content', name:'КОНТЕНТ',
+    gradient:'linear-gradient(90deg,#60a5fa,#2196f3,#06b6d4)',
+    pctNum:80, pctCol:'#2196f3',
+    steps:[
+      {
+        name:'Контент-\nплан',icon:'🗓️',type:'boost',badge:'ИИ ускоряет',hole:true,
+        title:'Контент-план — ДЫРА', chain:'Контент', ai:'boost',
+        desc:'ДЫРА: контент-плана нет. Темы берутся «из событий» — нет системы, нет регулярности. 5 часов в неделю уходит только на то, чтобы понять, о чём написать. Это главный тормоз роста соцсетей.',
+        desc_quote:'«Не знаю о чём писать» | «Контент-плана нет»',
+        unit_money:'0 ₽', unit_time:'5 ч/нед — главный «пожиратель» по контенту',
+        ai_text:'ИИ за 10 минут строит контент-план на 2 недели: темы, тип (история / продукт / возражение / кейс / результат), ключевой месседж каждого поста. Светлана утверждает. 5 часов → 10 минут.',
+        links:[{color:'#2196f3',lbl:'→ Текст поста',txt:'План → конкретные темы',sub:'Информационный'},{color:'#2196f3',lbl:'→ Съёмка',txt:'План → задание на съёмку',sub:'Информационный'}]
+      },
+      {
+        name:'Съёмка',icon:'📸',type:'human',badge:'Человек',hole:false,
+        title:'Съёмка фото и видео', chain:'Контент', ai:'human',
+        desc:'Светлана снимает сама или с партнёром на телефон, в разных локациях. ~30 мин–1 ч в день, итого ~3 ч/нед. Это живой контент — его нельзя автоматизировать.',
+        desc_quote:null,
+        unit_money:'0 ₽ (телефон есть)', unit_time:'3 ч/нед (фото/видео)',
+        ai_text:'ИИ помогает ДО: «съёмочное задание» — список конкретных кадров, что сказать в каждом видео, какой результат должен зафиксировать. ПОСЛЕ: помогает отобрать лучшее из отснятого.',
+        links:[{color:'#2196f3',lbl:'→ Текст поста',txt:'Фото/видео → материал для публикации',sub:'Информационный'}]
+      },
+      {
+        name:'Текст\nпоста',icon:'✍️',type:'full',badge:'ИИ сам',hole:false,
+        title:'Написание текста поста', chain:'Контент', ai:'full',
+        desc:'Светлана уже иногда использует ИИ для текстов. Пишет через личную историю и факты — без агрессии, без обещаний «быстрых денег». Тратит ~3 ч/нед на написание.',
+        desc_quote:'«Иногда подбираю через ИИ» | «Нравятся посты — через личные истории, через факты»',
+        unit_money:'0 ₽', unit_time:'3 ч/нед',
+        ai_text:'ИИ пишет пост в голосе Светланы за 2 минуты: берёт тему + ситуацию → история + факт + призыв. Без «уникально», «пассивного дохода», «разбогатеешь». Через результат и личный пример.',
+        links:[{color:'#2196f3',lbl:'→ Публикация',txt:'Текст готов → публикация на площадках',sub:'Триггерный'},{color:'#f97316',lbl:'→ Привлечение: Статусы',txt:'Тексты питают статусы в WhatsApp/TG',sub:'Информационный'}]
+      },
+      {
+        name:'Публикация\n7 площадок',icon:'🌐',type:'full',badge:'ИИ сам',hole:false,
+        title:'Публикация на 7 площадках', chain:'Контент', ai:'full',
+        desc:'Контент публикуется на 7 площадках: Instagram, Telegram, VK, Одноклассники, WhatsApp, IMO, Facebook. Каждая имеет свою специфику. Сейчас это ~7 ч/нед.',
+        desc_quote:null,
+        unit_money:'0 ₽', unit_time:'7 ч/нед (публикация и ведение)',
+        ai_text:'ИИ адаптирует один пост под все 7 площадок: Instagram — с хэштегами, Telegram — короче и прямее, ОК — теплее и проще, WhatsApp — как личное сообщение. Один пост → семь версий за 3 мин.',
+        links:[{color:'#2196f3',lbl:'→ Привлечение: Статусы',txt:'Посты → охваты → новые контакты',sub:'Петля возврата'}]
+      },
+      {
+        name:'Ответы\nДирект',icon:'💌',type:'boost',badge:'ИИ ускоряет',hole:false,
+        title:'Ответы на комментарии и директ', chain:'Контент', ai:'boost',
+        desc:'Светлана сама отвечает на всё. «Вижу, много народу заходит в соцсети» — но конкретного живого отклика с запросом пока мало. Нужна система конвертации интереса в диалог.',
+        desc_quote:'«Вижу, много наблюдает в соцсетях. Но конкретного живого отклика пока нет»',
+        unit_money:'0 ₽', unit_time:'3 ч/нед (ответы в директ/мессенджерах)',
+        ai_text:'ИИ готовит 3 варианта ответа на каждый входящий: мягкий / нейтральный / активный. Для типовых возражений («это сетевой», «нет времени», «дорого») — готовые скрипты ответов.',
+        links:[{color:'#7c3aed',lbl:'→ Продажа: Входящий запрос',txt:'Тёплый ответ → начало продажи',sub:'Триггерный'}]
+      }
+    ]
+  },
+  {
+    id:'retain', name:'УДЕРЖАНИЕ',
+    gradient:'linear-gradient(90deg,#f87171,#e04848,#f97316)',
+    pctNum:67, pctCol:'#e04848',
+    steps:[
+      {
+        name:'Follow-up\nдень 2 и 7',icon:'🔔',type:'boost',badge:'ИИ ускоряет',hole:false,
+        title:'Follow-up: день 2 и день 7', chain:'Удержание', ai:'boost',
+        desc:'Сильная практика: через 2 дня после получения продукта — вопрос о самочувствии, через 7 дней — о результате. Именно это даёт 52% повторных заказов — выше среднего по рынку.',
+        desc_quote:'«Через 2 дня задаю вопрос о самочувствии. Через 7 дней спрашиваю какой результат»',
+        unit_money:'0 ₽ → даёт 52% autoship', unit_time:'1 ч/нед (клиенты)',
+        ai_text:'ИИ отправляет тёплое шаблонное сообщение на день 2 и день 7. Если клиент отвечает — Светлана подхватывает лично. Если нет — мягкий повтор через пару дней. Автоматически для каждого нового клиента.',
+        links:[{color:'#d97706',lbl:'→ Сбор отзывов',txt:'День 7 → момент запроса отзыва',sub:'Триггерный'},{color:'#d97706',lbl:'→ Допродажа',txt:'Результат есть → следующий продукт',sub:'Информационный'}]
+      },
+      {
+        name:'Рассылки\nклиентам',icon:'📤',type:'full',badge:'ИИ сам',hole:true,
+        title:'Рассылки клиентам — ДЫРА', chain:'Удержание', ai:'full',
+        desc:'ДЫРА: нет системы рассылок для клиентов. Чаты для команды есть, но целевых касаний клиентам по продуктам — нет. При 52% autoship это прямая потеря: ещё 10–15% клиентов можно удерживать через регулярные касания.',
+        desc_quote:null,
+        unit_money:'0 ₽ → потеря +10–15% к autoship', unit_time:'~1 ч/нед — дыра (не делается)',
+        ai_text:'ИИ создаёт систему касаний: сезонный оффер (весна / зима), напоминание «пора заказать следующий набор», «поздравление с первым месяцем». Настраивается один раз — работает само.',
+        links:[{color:'#d97706',lbl:'→ Допродажа',txt:'Касание → предложение следующего продукта',sub:'Информационный'}]
+      },
+      {
+        name:'Сбор\nотзывов',icon:'⭐',type:'full',badge:'ИИ сам',hole:true,
+        title:'Сбор отзывов — ДЫРА', chain:'Удержание', ai:'full',
+        desc:'ДЫРА: фото и видео результатов клиентов не собираются систематически. «Не прошу у клиентов» — прямая цитата. Без отзывов нет социального доказательства. Это контент, который Светлана не создаёт, хотя он уже есть у её клиентов.',
+        desc_quote:'«Не прошу у клиентов» | «Сбор отзывов — пока только на словах»',
+        unit_money:'0 ₽ → отзывы = бесплатный контент', unit_time:'1 ч/нед — дыра (не делается)',
+        ai_text:'На день 7 ИИ автоматически отправляет: «[Имя], напиши 2–3 предложения что изменилось за неделю?» Простой шаблон → постоянный поток текстовых отзывов. Видео — Светлана просит лично.',
+        links:[{color:'#2196f3',lbl:'→ Контент: Текст поста',txt:'Отзыв клиента → готовый материал',sub:'Информационный'}]
+      },
+      {
+        name:'Допродажа\nпродукта',icon:'🛒',type:'boost',badge:'ИИ ускоряет',hole:false,
+        title:'Допродажа следующего продукта', chain:'Удержание', ai:'boost',
+        desc:'После первого результата Светлана предлагает следующий продукт из линейки. Есть система, объясняет под конкретного человека. Это основа роста среднего чека.',
+        desc_quote:'«Стараюсь системно. Объясняю клиенту что это даёт»',
+        unit_money:'Доп. чек: 5–15К ₽', unit_time:'Часть из 5 ч/нед (консультации)',
+        ai_text:'ИИ через 14–21 день после покупки готовит персональное предложение под результаты клиента: «[Имя], судя по тому что суставы беспокоят — посмотри ГеленФит». Светлана проверяет → отправляет.',
+        links:[{color:'#7c3aed',lbl:'→ Продажа: Оплата на сайте',txt:'Допродажа → повторная оплата',sub:'Петля возврата'}]
+      },
+      {
+        name:'Рекомен-\nдация',icon:'🤝',type:'human',badge:'Человек',hole:false,
+        title:'Рекомендация и сарафан', chain:'Удержание', ai:'human',
+        desc:'Довольный клиент рекомендует Светлану знакомым. 90% новых контактов — именно тёплый рынок, сарафан. Это механика которая питает всё привлечение.',
+        desc_quote:'«Прошу рекомендации, да» | «Работает через историю результата»',
+        unit_money:'0 ₽ → бесплатный новый контакт', unit_time:'Входит в созвоны',
+        ai_text:'ИИ создаёт условия: пост с призывом «тегни подругу», шаблон сообщения «Порекомендуй меня тому, кому нужна энергия». Саму просьбу о рекомендации Светлана делает лично — это живой разговор.',
+        links:[{color:'#f97316',lbl:'→ Привлечение: Первый контакт',txt:'Рекомендация → новый человек в цепочку',sub:'Петля сарафана'}]
+      }
+    ]
+  }
+];
+
+const CONNECTIONS = [
+  {color:'#0d9488',label:'Продажа → Исполнение',sub:'Оплата запускает онбординг и добавление в чаты',type:'Триггерный'},
+  {color:'#7c3aed',label:'Исполнение → Контент',sub:'Шаблоны и результаты команды → материал для постов',type:'Информационный'},
+  {color:'#d97706',label:'Исполнение → Удержание',sub:'Добавление в чаты → запускает follow-up клиента',type:'Триггерный'},
+  {color:'#2196f3',label:'Контент → Привлечение',sub:'Посты и сторис → охваты → новые контакты в директ',type:'Петля возврата'},
+  {color:'#f97316',label:'Удержание → Привлечение',sub:'Рекомендация довольного клиента → новый человек',type:'Петля сарафана'},
+];
+
+// ══ RENDER ════════════════════════════════════════════════════════════
+function arrow(type){
+  const c = type==='full'?'rgba(29,184,122,.25)':type==='boost'?'rgba(232,163,8,.25)':'rgba(224,72,72,.2)';
+  const d = type==='full'?'#1db87a':type==='boost'?'#e8a308':'#e04848';
+  return `<div class="arrow-wrap"><svg class="arrow-svg" viewBox="0 0 20 20">
+    <line x1="2" y1="10" x2="18" y2="10" stroke="${c}" stroke-width="1.8"/>
+    <polygon points="15,7 18,10 15,13" fill="${c}"/>
+    <circle cx="2" cy="10" r="2.4" fill="${d}" opacity=".75">
+      <animate attributeName="cx" from="2" to="15" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+  </svg></div>`;
+}
+
+function buildChains(){
+  const cont = document.getElementById('chains');
+  CHAINS.forEach(ch => {
+    const pctBg = ch.pctCol+'22';
+    const wrap = document.createElement('div');
+    wrap.className = 'chain-wrap';
+
+    let stepsHTML = '<div class="steps-row">';
+    ch.steps.forEach((s,i)=>{
+      const cls = s.hole ? `step ${s.type} hole` : `step ${s.type}`;
+      const holeMarker = s.hole ? '<div class="hole-marker">⚠ ДЫРА</div>' : '';
+      stepsHTML += `<div class="${cls}" onclick='openM(${JSON.stringify(JSON.stringify(s))})'>
+        <div class="step-energy"></div>
+        ${holeMarker}
+        <div class="step-icon">${s.icon}</div>
+        <div class="step-name">${s.name}</div>
+        <div class="step-badge">${s.badge}</div>
+      </div>`;
+      if(i < ch.steps.length-1) stepsHTML += arrow(ch.steps[i].type);
+    });
+    stepsHTML += '</div>';
+
+    wrap.innerHTML = `<div class="chain-card">
+      <div class="chain-top">
+        <div class="chain-bar" style="background:${ch.gradient}"></div>
+        <div class="chain-name">${ch.name}</div>
+        <div class="chain-pct-badge" style="background:${pctBg};color:${ch.pctCol}">${ch.pctNum}% AI</div>
+      </div>
+      ${stepsHTML}
+    </div>`;
+    cont.appendChild(wrap);
+  });
+}
+
+function buildConns(){
+  const cont = document.getElementById('conns');
+  CONNECTIONS.forEach(c=>{
+    const pill = document.createElement('div');
+    pill.className='conn-pill';
+    pill.style.borderLeftColor=c.color;
+    pill.style.borderLeftWidth='3px';
+    pill.innerHTML=`<div class="conn-dot" style="background:${c.color};box-shadow:0 0 8px ${c.color}70"></div>
+      <div>
+        <div class="conn-lbl">${c.label}</div>
+        <div class="conn-sub">${c.sub}</div>
+        <div class="conn-type" style="color:${c.color}">${c.type}</div>
+      </div>`;
+    cont.appendChild(pill);
+  });
+}
+
+// ══ MODAL ════════════════════════════════════════════════════════════
+function openM(sj){
+  const s = JSON.parse(sj);
+  const labels = {full:'🟢 ИИ делает сам',boost:'🟡 ИИ ускоряет ×5–10',human:'🔴 Человек незаменим'};
+  const aiT = {full:'⚡ Что конкретно делает ИИ',boost:'⚡ Как ИИ ускоряет',human:'👤 Роль человека + поддержка ИИ'};
+  document.getElementById('mBadge').className=`mbadge ${s.ai}`;
+  document.getElementById('mBadge').textContent=labels[s.ai];
+  document.getElementById('mTitle').textContent=s.title;
+
+  let h='';
+  h+=`<div class="mchain">Цепочка: <b>${s.chain}</b></div>`;
+  h+=`<div class="mdesc">${s.desc}</div>`;
+  if(s.desc_quote) h+=`<div class="mquote">${s.desc_quote}</div>`;
+
+  if(s.unit_money||s.unit_time){
+    h+=`<div class="msec">📊 Юнит-экономика звена</div><div class="munit">`;
+    if(s.unit_money) h+=`<div class="munit-row"><span>💰</span>${s.unit_money}</div>`;
+    if(s.unit_time) h+=`<div class="munit-row"><span>⏱</span>${s.unit_time}</div>`;
+    h+=`</div>`;
+  }
+
+  h+=`<div class="msec">${aiT[s.ai]}</div>`;
+  h+=`<div class="mai ${s.ai}"><div class="mai-t">${aiT[s.ai]}</div><div class="mai-txt">${s.ai_text}</div></div>`;
+
+  if(s.links&&s.links.length){
+    h+=`<div class="msec">⚡ Связи с другими звеньями</div><div class="mlinks">`;
+    s.links.forEach(l=>{
+      h+=`<div class="ml">
+        <div class="ml-dot" style="background:${l.color};box-shadow:0 0 6px ${l.color}90"></div>
+        <div><div class="ml-lbl" style="color:${l.color}">${l.lbl}</div>
+        <div class="ml-txt">${l.txt}</div>
+        <div class="ml-sub">${l.sub}</div></div>
+      </div>`;
+    });
+    h+=`</div>`;
+  }
+
+  document.getElementById('mBody').innerHTML=h;
+  document.getElementById('overlay').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('overlay').classList.remove('show');
+  document.body.style.overflow='';
+}
+function overlayClick(e){if(e.target===document.getElementById('overlay'))closeModal();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+// ══ CANVAS ═══════════════════════════════════════════════════════════
+function initCanvas(){
+  const cv=document.getElementById('bg'), ctx=cv.getContext('2d');
+  function resize(){cv.width=window.innerWidth;cv.height=Math.max(window.innerHeight,document.body.scrollHeight)}
+  resize();window.addEventListener('resize',resize);
+  const palette=['#1db87a','#2aa198','#1a5276','#06b6d4'];
+  const nodes=Array.from({length:60},()=>({
+    x:Math.random()*cv.width,y:Math.random()*cv.height,
+    vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,
+    r:Math.random()*2+1.5,ph:Math.random()*Math.PI*2
+  }));
+  function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    const t=Date.now()*.001;
+    nodes.forEach(n=>{
+      n.x+=n.vx;n.y+=n.vy;
+      if(n.x<0||n.x>cv.width)n.vx*=-1;
+      if(n.y<0||n.y>cv.height)n.vy*=-1;
+    });
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y;
+        const d=Math.sqrt(dx*dx+dy*dy);
+        if(d<140){
+          ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);
+          ctx.strokeStyle=`rgba(29,184,122,${(1-d/140)*.45})`;ctx.lineWidth=.9;ctx.stroke();
+        }
+      }
+    }
+    nodes.forEach((n,i)=>{
+      const g=Math.sin(t*1.3+n.ph)*.5+.5;
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r+g*.9,0,Math.PI*2);
+      ctx.fillStyle=palette[i%palette.length];ctx.globalAlpha=.4+g*.3;ctx.fill();ctx.globalAlpha=1;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ══ INIT ═════════════════════════════════════════════════════════════
+buildChains();
+buildConns();
+initCanvas();
+</script>
+</body>
+</html>
